@@ -15,6 +15,7 @@ var elasticsearchClient = new elasticsearch.Client({
 var q = "kelowna,okanagan,ylw"
 twitterClient.stream('statuses/filter', {track: q},  function(stream){
   stream.on('data', function(tweet) {
+    tweet.timestamp = new Date(tweet.created_at);
     console.log(tweet.text);
     postToES(tweet);
   });
@@ -35,20 +36,6 @@ function postToES(tweet) {
       console.trace(error);
     } else {
       console.log('Tweet added successfully');
-    }
-  });
-}
-
-function deleteTweet(id) {
-  elasticsearchClient.delete({
-    id: id,
-    index: 'kelowna_tweets',
-    type: 'tweets'
-  }, function (error) {
-    if (error) {
-      console.trace(error);
-    } else {
-      console.log('Tweet deleted successfully');
     }
   });
 }
